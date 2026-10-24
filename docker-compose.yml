@@ -1,0 +1,54 @@
+services:
+  veritabani:
+    image: mysql:5.7
+    container_name: proje-veritabani
+    environment:
+      MYSQL_ROOT_PASSWORD: ${ROOT_SIFRE}
+      MYSQL_DATABASE: ${VERITABANI_ADI}
+      MYSQL_USER: ${KULLANICI_ADI}
+      MYSQL_PASSWORD: ${KULLANICI_SIFRE}
+    volumes:
+      - ./mysql-verilerim:/var/lib/mysql
+    networks:
+      - proje_agi
+
+  web_uygulamasi:
+    image: wordpress:latest
+    container_name: proje-wordpress
+    ports:
+      - "8080:80"
+    environment:
+      WORDPRESS_DB_HOST: veritabani:3306
+      WORDPRESS_DB_USER: ${KULLANICI_ADI}
+      WORDPRESS_DB_PASSWORD: ${KULLANICI_SIFRE}
+      WORDPRESS_DB_NAME: ${VERITABANI_ADI}
+    depends_on:
+      - veritabani
+    networks:
+      - proje_agi
+
+  veritabani_yoneticisi:
+    image: phpmyadmin/phpmyadmin
+    container_name: proje-phpmyadmin
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: veritabani
+      PMA_PORT: 3306
+      PMA_USER: ${KULLANICI_ADI}
+      PMA_PASSWORD: ${KULLANICI_SIFRE}
+    depends_on:
+      - veritabani
+    networks:
+      - proje_agi
+
+  kendi_uygulamam:
+    build: .
+    container_name: proje-python-uygulamam
+    ports:
+      - "8090:8090"
+    networks:
+      - proje_agi
+
+networks:
+  proje_agi:
