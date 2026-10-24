@@ -1,0 +1,15 @@
+name: Otomatik Docker İnşası
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  test-ve-insaa:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Depodaki Kodları Sunucuya Çek
+      uses: actions/checkout@v3
+    
+    - name: Docker İmajını Baştan Oluştur ve Test Et
+      run: docker build -t python-uygulamasi-test .
